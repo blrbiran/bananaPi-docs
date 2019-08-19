@@ -1,0 +1,75 @@
+* Urls
+
+1. r2-bsp: https://github.com/bpi-sinovoip/bpi-r2-bsp
+2. r2-release: http://wiki.banana-pi.org/Banana_Pi_BPI-R2#Release
+
+* Required Packages
+1. gcc-arm-linux-gnueabihf
+   1. gcc-6-arm-linux-gnueabihf
+2. u-boot-tools
+3. gcc
+4. make
+5. libncurses
+6. pv
+7. bpi-update: "curl -sL https://github.com/BPI-SINOVOIP/bpi-tools/raw/master/bpi-tools | sudo -E bash"
+
+
+Useless:
+1. bison, flex, swig, python-dev
+
+* Build
+
+1. ./build.sh
+
+* Flash SD card
+#+BEGIN_SRC sh
+dd if=\<image file\> of=/dev/sdb
+#+END_SRC
+
+* Update U-boot and Kernel
+1. Install SD card to this host PC, please ensure Ubuntu 16.04 R2 image is installed on this SD card
+2. Enter folder SD which is generated after building
+3. Run below command to update u-boot and Linux kernel
+   1. need to copy /home/mtktest/banana-pi/BPI-flash-download/* to ./SD/
+   2. modify /usr/bin/bpi-update /dev/mmcblk0 => /dev/sdb (tf card block)
+   3. bpi-update -c bpi-r2.conf
+   4. cp BPI_ROOT folder to BPI_ROOT disk
+   5. cp BPI_BOOT folder to BPI_BOOT disk
+4. After it completes, move SD to R2 board
+5. Press power button to activate this board
+
+* Change defconfig
+ARCH=arm make O=out mt7623n_evb_bpi_defconfig
+ARCH=arm make O=out menuconfig
+ARCH=arm make O=out savedefconfig
+cp out/defconfig arch/arm/configs/mt7623n_evb_bpi_defconfig
+
+* Enable RTC DS1307 in config
+1. Device Drivers -> Real Time Clock -> Dallas/Maxim DS1307...
+
+* login Ubuntu
+username: root
+password: bananapi
+
+* Enable RTC module
+1. no i2c node in dts
+   1. modprobe i2c-dev
+   2. echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-0/new_device
+   3. modprobe rtc-ds1307
+2. i2c node in dts
+   1. no need modprobe
+3. cat /proc/driver/rtc
+4. 
+
+
+kernel module command
+1. modprobe
+2. insmod
+3. lsmod
+4. modinfo
+
+* Check log in minicom
+minicom -m -D /dev/ttyUSB0
+Alt-Z -> O -> Serial Port Setup -> Disable Hardware Flow Control -> Save setup as dfl
+
+
