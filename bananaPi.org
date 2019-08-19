@@ -58,11 +58,21 @@ password: bananapi
    3. modprobe rtc-ds1307
 2. i2c node in dts
    1. no need modprobe
-3. cat /proc/driver/rtc
-4. 
 
+* RTC related operate
+1. Read rtc info
+   1. cat /proc/driver/rtc
+2. hctosys -> sync time from RTC to system
+   1. hwclock -s --utc
+   2. date ; cat /proc/driver/rtc
+3. systohc -> sync time from system to RTC
+   1. date 100123552017
+   2. hwclock -w --utc
+   3. date ; cat /proc/driver/rtc
+4. Set rtc alarm (DS1307 module not support, No intr pin)
+   1. echo "+20" > /sys/class/rtc/rtc0/wakealarm
 
-kernel module command
+* Kernel module command
 1. modprobe
 2. insmod
 3. lsmod
